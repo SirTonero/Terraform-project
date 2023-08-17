@@ -51,7 +51,7 @@ resource "aws_subnet" "public_subnet_az2" {
 
 #create a route table and add a public route
 resource "aws_route_table" "public_route_table" {
-   vpc_id = aws_vpc.vpc
+   vpc_id = aws_vpc.vpc.id
 
    route {
       cidr_block = "0.0.0.0/0"
@@ -65,14 +65,14 @@ resource "aws_route_table" "public_route_table" {
 # Associate pubic subnet az1 to route table
 
 resource "aws_route_table_association" "public_subnet_az1_rt_association" {
-   subnet_id = aws_subnet.public_subnet_az1
+   subnet_id = aws_subnet.public_subnet_az1.id
    route_table_id = aws_route_table.public_route_table.id
 }
 
 # Associate pubic subnet az1 to route table
 resource "aws_route_table_association" "public_subnet_az2_rt_association" {
-   subnet_id = aws_subnet.public_subnet_az2
-   route_table_id = aws_route_table.public_route_table
+   subnet_id = aws_subnet.public_subnet_az2.id
+   route_table_id = aws_route_table.public_route_table.id
 }
 
 #create Private subnet in az1
