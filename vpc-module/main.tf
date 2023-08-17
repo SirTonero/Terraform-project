@@ -53,7 +53,7 @@ resource "aws_subnet" "public_subnet_az2" {
 resource "aws_route_table" "public_route_table" {
    vpc_id = aws_vpc.vpc
 
-   route = {
+   route {
       cidr_block = "0.0.0.0/0"
       gateway_id = aws_internet_gateway.internet_gateway.id
    }
