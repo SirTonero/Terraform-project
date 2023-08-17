@@ -1,1 +1,100 @@
-# This is a vpc module
+provider "aws" {
+   region = var.region
+}
+
+resource "aws_vpc" "vpc" {
+   cidr_block = var.vpc_cidr
+   instance_tenancy = "default"
+   enable_dns_support = true
+   enable_dns_hostnames = true
+
+   tags = {
+      Name = "${var.vpc_name}"
+   }
+}
+
+# Create Internet Gateway and attach it to vpc
+resource "aws_internet_gateway" "internet_gateway" {
+   vpc_id = aws_vpc.vpc.id
+
+   tags = {
+      Name = "${var.project_name}-${var.igw_name}"
+   }
+}
+
+# Use a data source to get all availability zones in the region
+data "aws_availability_zones" "aws_availability_zones" {}
+
+#create a public subnet in AZ1
+resource "aws_subnet" "public_subnet_az1" {
+   vpc_id = aws_vpc.vpc.id
+   cidr_block = var.public_subnet_az1_cidr
+   availability_zone = data.aws_availability_zones.aws_availability_zones.names[0]
+   map_public_ip_on_launch = true
+
+   tags = {
+      Name = "${var.project_name}public_subnet_az1"
+   }
+}
+
+#create a public subnet in AZ2
+resource "aws_subnet" "public_subnet_az2" {
+   vpc_id = aws_vpc.vpc.id
+   cidr_block = var.public_subnet_az2_cidr
+   availability_zone = data.aws_availability_zones.aws_availability_zones.names[1]
+   map_public_ip_on_launch = true
+
+   tags = {
+      Name  = "${var.project_name}public_subnet_az2"
+   }
+}
+
+#create a route table and add a public route
+resource "aws_route_table" "public_route_table" {
+   vpc_id = aws_vpc.vpc
+
+   route = {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.internet_gateway.id.id
+   }
+   tags = {
+      Name = "${var.project_name}--${var.route_table}"
+   }
+}
+
+# Associate pubic subnet az1 to route table
+
+resource "aws_route_table_association" "public_subnet_az1_rt_association" {
+   subnet_id = aws_subnet.public_subnet_az1
+   route_table_id = aws_route_table.public_route_table.id
+}
+
+# Associate pubic subnet az1 to route table
+resource "aws_route_table_association" "public_subnet_az2_rt_association" {
+   subnet_id = aws_subnet.public_subnet_az2
+   route_table_id = aws_route_table.public_route_table
+}
+
+#create Private subnet in az1
+resource "aws_subnet" "private_subnet_az1" {
+   vpc_id = aws_vpc.vpc.id
+   cidr_block = var.private_subnet_az1_cidr
+   availability_zone = data.aws_availability_zones.aws_availability_zones.names[0]
+   map_public_ip_on_launch = false
+
+   tags = {
+      Name  = "${var.project_name}-private_subnet_az1"
+   }
+}
+
+#create Private subnet in az2
+resource "aws_subnet" "private_subnet_az2" {
+   vpc_id = aws_vpc.vpc.id
+   cidr_block = var.private_subnet_az2_cidr
+   availability_zone = data.aws_availability_zones.aws_availability_zones.names[1]
+   map_public_ip_on_launch = false 
+   
+   tags = {
+      Name  = "${var.project_name}-private_subnet_az2"
+   }
+}
