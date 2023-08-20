@@ -33,7 +33,7 @@ resource "aws_subnet" "public_subnet_az1" {
    map_public_ip_on_launch = true
 
    tags = {
-      Name = "${var.project_name}public_subnet_az1"
+      Name = "${var.project_name}-public_subnet_az1"
    }
 }
 

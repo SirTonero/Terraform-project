@@ -52,3 +52,12 @@ output "availability_zone_1" {
 output "availability_zone_2" {
    value = data.aws_availability_zones.aws_availability_zones.names[1]
 }
+# Export the ids of all public subnet 
+output "public_subnets_id" {
+   value = [aws_subnet.public_subnet_az1.id,aws_subnet.public_subnet_az2.id]
+}
+
+# Export the ids of all private subnet 
+output "private_subnets_id" {
+   value = [aws_subnet.private_subnet_az1.id,aws_subnet.private_subnet_az2.id]
+}
