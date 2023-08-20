@@ -5,6 +5,12 @@ resource "aws_alb" "app_alb" {
    subnets =  module.vpc-module.public_subnets_id
 }
 
-resource "aws_lb_listener" "" {
-  
+#
+resource "aws_alb_target_group" "todo-app-tg" {
+   name = "Todo-App-tg"
+   port = 80
+   protocol = "HTTP"
+   target_type = "ip"
+   vpc_id = module.vpc-module.vpc_id
+
 }
